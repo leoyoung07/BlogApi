@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace BlogApi.Models
@@ -24,36 +26,67 @@ namespace BlogApi.Models
         public string HtmlUrl { get; set; }
 
         [DataMember(Name = "id")]
-        public string Id { get; set; }
+        public long Id { get; set; }
 
         [DataMember(Name = "number")]
-        public string Number { get; set; }
+        public int Number { get; set; }
 
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
         [DataMember(Name = "labels")]
-        public string Labels { get; set; }
+        public List<Label> Labels { get; set; }
 
         [DataMember(Name = "state")]
         public string State { get; set; }
 
         [DataMember(Name = "milestone")]
-        public string Milestone { get; set; }
+        public Milestone Milestone { get; set; }
 
         [DataMember(Name = "comments")]
-        public string Comments { get; set; }
+        public int Comments { get; set; }
 
         [DataMember(Name = "created_at")]
-        public string CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
         [DataMember(Name = "updated_at")]
-        public string UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         [DataMember(Name = "closed_at")]
-        public string ClosedAt { get; set; }
+        public DateTime ClosedAt { get; set; }
 
         [DataMember(Name = "body")]
         public string Body { get; set; }
+    }
+
+    [DataContract]
+    public class Label
+    {
+        [DataMember(Name = "id")]
+        public long Id { get; set; }
+
+        [DataMember(Name = "node")]
+        public string NodeId { get; set; }
+
+        [DataMember(Name = "url")]
+        public string Url { get; set; }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "color")]
+        public string Color { get; set; }
+
+        [DataMember(Name = "default")]
+        public bool Default { get; set; }
+
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+    }
+
+    [DataContract]
+    public class Milestone
+    {
+        // TODO class Milestone
     }
 }

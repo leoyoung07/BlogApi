@@ -33,12 +33,12 @@ namespace BlogApi.Controllers
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
-                    string blogs = await response.Content.ReadAsStringAsync();
+                    List<GithubIssue> blogs = await response.Content.ReadAsAsync<List<GithubIssue>>();
                     return Ok(blogs);
                 }
                 else
                 {
-                    return Ok("[]");
+                    return Ok(new List<GithubIssue>());
                 }
             }
         }
