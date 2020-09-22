@@ -20,7 +20,7 @@ namespace BlogApi.Controllers
             _logger = logger;
         }
 
-        private async Task<List<GithubIssue>> GetAllBlogs()
+        private async Task<IEnumerable<GithubIssue>> GetAllBlogs()
         {
             using (HttpClient client = new HttpClient())
             {
@@ -31,7 +31,7 @@ namespace BlogApi.Controllers
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
-                    List<GithubIssue> blogs = await response.Content.ReadAsAsync<List<GithubIssue>>();
+                    IEnumerable<GithubIssue> blogs = await response.Content.ReadAsAsync<IEnumerable<GithubIssue>>();
                     return blogs;
                 }
                 else
@@ -43,9 +43,29 @@ namespace BlogApi.Controllers
 
         [HttpGet]
         [Route("list")]
-        public async Task<IActionResult> GetBlogList()
+        public async Task<IActionResult> GetBlogList(
+            [FromQuery(Name = "q")] string query,
+            [FromQuery(Name = "tag")] string label,
+            [FromQuery(Name = "archive")] string milestone
+        )
         {
-            return Ok(await this.GetAllBlogs());
+            IEnumerable<GithubIssue> blogs = await this.GetAllBlogs();
+            if (!string.IsNullOrEmpty(query))
+            {
+                blogs = blogs.Where(blog =>
+                    blog.Body.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+                    blog.Title.Contains(query, StringComparison.OrdinalIgnoreCase)
+                );
+            }
+            if (!string.IsNullOrEmpty(label))
+            {
+                blogs = blogs.Where(blog => blog.Labels.Exists(l => l.Name.Equals(label, StringComparison.OrdinalIgnoreCase)));
+            }
+            if (!string.IsNullOrEmpty(milestone))
+            {
+                blogs = blogs.Where(blog => blog.Milestone != null && blog.Milestone.Title.Equals(milestone, StringComparison.OrdinalIgnoreCase));
+            }
+            return Ok(blogs.ToList());
         }
     }
 }
