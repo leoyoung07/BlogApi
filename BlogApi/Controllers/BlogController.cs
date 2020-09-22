@@ -20,9 +20,7 @@ namespace BlogApi.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        [Route("list")]
-        public async Task<IActionResult> GetBlogList()
+        private async Task<List<GithubIssue>> GetAllBlogs()
         {
             using (HttpClient client = new HttpClient())
             {
@@ -34,13 +32,20 @@ namespace BlogApi.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     List<GithubIssue> blogs = await response.Content.ReadAsAsync<List<GithubIssue>>();
-                    return Ok(blogs);
+                    return blogs;
                 }
                 else
                 {
-                    return Ok(new List<GithubIssue>());
+                    return new List<GithubIssue>();
                 }
             }
+        }
+
+        [HttpGet]
+        [Route("list")]
+        public async Task<IActionResult> GetBlogList()
+        {
+            return Ok(await this.GetAllBlogs());
         }
     }
 }
