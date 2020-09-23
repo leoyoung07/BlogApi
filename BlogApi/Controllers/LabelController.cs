@@ -1,16 +1,16 @@
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using BlogApi.Models;
 
 namespace BlogApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class LabelController: ControllerBase
+    public class LabelController : ControllerBase
     {
-        [HttpGet]
-        [Route("list")]
-        public async Task<IActionResult> GetLabelList()
+        public async Task<IEnumerable<Label>> GetAllLabels()
         {
             using (HttpClient client = new HttpClient())
             {
@@ -21,14 +21,21 @@ namespace BlogApi.Controllers
                 HttpResponseMessage response = await client.GetAsync(url);
                 if (response.IsSuccessStatusCode)
                 {
-                    string labels = await response.Content.ReadAsStringAsync();
-                    return Ok(labels);
+                    IEnumerable<Label> labels = await response.Content.ReadAsAsync<IEnumerable<Label>>();
+                    return labels;
                 }
                 else
                 {
-                    return Ok("[]");
+                    return new List<Label>();
                 }
             }
+        }
+
+        [HttpGet]
+        [Route("list")]
+        public async Task<IActionResult> GetLabelList()
+        {
+            return Ok(await GetAllLabels());
         }
     }
 }
