@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BlogApi.Models;
+using BlogApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -22,23 +23,8 @@ namespace BlogApi.Controllers
 
         private async Task<IEnumerable<GithubIssue>> GetAllBlogs()
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders
-                    .UserAgent
-                    .TryParseAdd("C# HttpClient");
-                string url = "https://api.github.com/repos/leoyoung07/blog/issues?state=closed&assignee=leoyoung07";
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<GithubIssue> blogs = await response.Content.ReadAsAsync<IEnumerable<GithubIssue>>();
-                    return blogs;
-                }
-                else
-                {
-                    return new List<GithubIssue>();
-                }
-            }
+            string url = "https://api.github.com/repos/leoyoung07/blog/issues?state=closed&assignee=leoyoung07";
+            return await GithubApiUtil.GetDataOrElse(url, () => new List<GithubIssue>());
         }
 
         [HttpGet]

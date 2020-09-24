@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using BlogApi.Models;
+using BlogApi.Utils;
 
 namespace BlogApi.Controllers
 {
@@ -12,23 +13,8 @@ namespace BlogApi.Controllers
     {
         public async Task<IEnumerable<Label>> GetAllLabels()
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders
-                    .UserAgent
-                    .TryParseAdd("C# HttpClient");
-                string url = "https://api.github.com/repos/leoyoung07/blog/labels";
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<Label> labels = await response.Content.ReadAsAsync<IEnumerable<Label>>();
-                    return labels;
-                }
-                else
-                {
-                    return new List<Label>();
-                }
-            }
+            string url = "https://api.github.com/repos/leoyoung07/blog/labels";
+            return await GithubApiUtil.GetDataOrElse(url, () => new List<Label>());
         }
 
         [HttpGet]

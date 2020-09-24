@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BlogApi.Models;
+using BlogApi.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -15,23 +16,8 @@ namespace BlogApi.Controllers
     {
         private async Task<IEnumerable<Milestone>> GetAllMilestones()
         {
-            using (HttpClient client = new HttpClient())
-            {
-                client.DefaultRequestHeaders
-                    .UserAgent
-                    .TryParseAdd("C# HttpClient");
-                string url = "https://api.github.com/repos/leoyoung07/blog/milestones";
-                HttpResponseMessage response = await client.GetAsync(url);
-                if (response.IsSuccessStatusCode)
-                {
-                    IEnumerable<Milestone> milestones = await response.Content.ReadAsAsync<IEnumerable<Milestone>>();
-                    return milestones;
-                }
-                else
-                {
-                    return new List<Milestone>();
-                }
-            }
+            string url = "https://api.github.com/repos/leoyoung07/blog/milestones";
+            return await GithubApiUtil.GetDataOrElse(url, () => new List<Milestone>());
         }
 
         [HttpGet]
